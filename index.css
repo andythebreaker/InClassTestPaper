@@ -1,5 +1,5 @@
 .label-text {
-    font-size: 10px;
+    font-size: 12px;
     fill: rebeccapurple;
     transform: translate(0, 3px); /* adjust vertical position to centre text */
   }
