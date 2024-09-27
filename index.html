@@ -7,10 +7,23 @@
 </head>
 
 <body><!--https://stackoverflow.com/questions/37990812/css-background-stripes-on-div-->
-    <button class="FLOATBTN btn-60" id="FULLSCREENANDCLEAR">
+    <button class="FLOATBTN btn-60" id="FULLSCREENANDCLEAR" style="display: none;">
         <!--https://ui-buttons.web.app/jello-->
-        <span>全螢幕、清空</span>
+        <span>全螢幕</span>
     </button>
+    <button class="FLOATBTN btn-60" id="masterMenu">
+        <!--https://ui-buttons.web.app/jello-->
+        <span>選單</span>
+    </button>
+
+    <button id="addTextBtn" class="FLOATBTN-RB btn-60" style="position: fixed;">
+        <span>+ text
+        </span>
+      </button>
+
+    <button id="vJPG" style="display: none;"></button>
+
+
     <a href="https://github.com/markedjs/marked" class="github-corner" aria-label="View source on Github">
         <!--https://marked.js.org/demo/-->
         <svg width="80" height="80" viewBox="0 0 250 250" style="fill:#202020; color:#fff;" aria-hidden="true">
@@ -23,7 +36,45 @@
                 fill="currentColor" class="octo-body"></path>
         </svg>
     </a>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
     <script src="index.js"></script>
+
+    <script type="module">
+        import { Canvg } from 'https://cdn.skypack.dev/canvg@^4.0.0';
+        
+        // 創建一個不可見的 canvas 元素
+        const canvas = document.createElement('canvas');
+        canvas.style.display = 'none';
+        // 設置 canvas 大小為 A4 紙張尺寸
+        // A4 紙張尺寸為 210mm x 297mm
+        // 假設螢幕 DPI 為 96（標準螢幕 DPI）
+        // 1 英吋 = 25.4 毫米
+        // 210mm = 210 / 25.4 * 96 ≈ 793 像素
+        // 297mm = 297 / 25.4 * 96 ≈ 1122 像素
+        canvas.width = 793;
+        canvas.height = 1122;
+        document.body.appendChild(canvas);
+        
+        document.getElementById('vJPG').addEventListener('click', async function () {
+            const svg = document.querySelector('svg');
+            const svgString = new XMLSerializer().serializeToString(svg);
+            
+            const ctx = canvas.getContext('2d');
+            const v = await Canvg.from(ctx, svgString);
+            v.start();
+            
+            const img = new Image();
+            img.src = canvas.toDataURL('image/jpg');
+            img.onload = function () {
+                const link = document.createElement('a');
+                link.href = img.src;
+                link.download = 'image.jpg';
+                link.click();
+            };
+        });
+    </script>
+
 </body>
 
 </html>

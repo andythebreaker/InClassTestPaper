@@ -45,6 +45,12 @@ body {
     width: 15vw;
 }
 
+.FLOATBTN-RB {
+    bottom: 0.1rem;
+    right: 0.1rem;
+    width: 5vw;
+}
+
 .btn-60,
 .btn-60 *,
 .btn-60 :after,

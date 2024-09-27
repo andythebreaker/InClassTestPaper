@@ -18,8 +18,8 @@ document.getElementById('FULLSCREENANDCLEAR').addEventListener('click', function
 var firstElement = document.body.firstElementChild;
 
 // Add HTML content before the first element
-firstElement.insertAdjacentHTML('beforebegin', 
-`
+firstElement.insertAdjacentHTML('beforebegin',
+    `
 <div class="CONTAINEROUT">
         <div class="CONTAINERFLEX">
             <div class="CONTAINERIN">
@@ -348,12 +348,316 @@ function ICTPaddTEXT(InClassTestPaperROW0, mytext) {
     }
 }
 
-ICTPaddTEXT(InClassTestPaperROW1, "說明:這是一張隨堂測驗卷的圖片");
-ICTPaddTEXT(InClassTestPaperROW2, "點擊我下載這張圖片");
-ICTPaddTEXT(InClassTestPaperROW3, "點擊我下載空白隨堂測驗卷檔案");
-ICTPaddTEXT(InClassTestPaperROW15, "以下的說明是給開發人員看的:");
-ICTPaddTEXT(InClassTestPaperROW16, "這是一個JavaScript套件");
-ICTPaddTEXT(InClassTestPaperROW17, "點擊我觀看說明文件");
-ICTPaddTEXT(InClassTestPaperROW9, "點擊左上的按鈕可以清空畫面，");
-ICTPaddTEXT(InClassTestPaperROW10, "也可以調整隨堂測驗卷的大小");
-ICTPaddTEXT(InClassTestPaperROW18, "MIT License 2024 andythebreaker");
+
+document.getElementById('masterMenu').addEventListener('click', function () {
+    Swal.fire({
+        title: '選單',
+        html:
+            '<button id="clearText" class="swal2-confirm swal2-styled">清除所有文字</button>' +
+            '<button id="toggleFullscreen" class="swal2-confirm swal2-styled">切換全螢幕</button>' +
+            '<button id="downloadSVG" class="swal2-confirm swal2-styled">下載</button>' +
+            '<button id="removeWidgets" class="swal2-confirm swal2-styled">移除 GitHub 和選單小工具</button>' +
+            '<button id="removeLine" class="swal2-confirm swal2-styled">移除指定行</button>',
+        showConfirmButton: false
+    });
+
+    document.getElementById('downloadSVG').addEventListener('click', function () {
+        Swal.fire({
+            title: '下載選項',
+            html:
+                '<button id="downloadPDF" class="swal2-confirm swal2-styled">下載 PDF</button>' +
+                '<button id="downloadJPG" class="swal2-confirm swal2-styled">下載 JPG</button>' +
+                '<button id="downloadSVGFile" class="swal2-confirm swal2-styled">下載 SVG</button>',
+            showConfirmButton: false
+        });
+
+        document.getElementById('downloadPDF').addEventListener('click', 
+            async function () {
+                const svg = document.querySelector('svg');
+                const svgString = new XMLSerializer().serializeToString(svg);
+                // 使用 window.jspdf 來訪問 jsPDF
+                const { jsPDF } = window.jspdf;
+                const pdfDoc = new jsPDF();
+      await pdfDoc.addSvgAsImage(svgString, 0, 0, pdfDoc.internal.pageSize.width, pdfDoc.internal.pageSize.height);
+      pdfDoc.save("x.pdf");
+            }
+        );
+
+        document.getElementById('downloadJPG').addEventListener('click', function () {
+           document.getElementById('vJPG').click();
+        });
+
+        document.getElementById('downloadSVGFile').addEventListener('click', function () {
+        // 獲取 SVG 元素
+        const svg = document.querySelector('svg');
+        
+        // 創建一個新的 XMLSerializer 對象
+        const serializer = new XMLSerializer();
+        
+        // 將 SVG 元素序列化為字符串
+        let svgString = serializer.serializeToString(svg);
+        
+        // 添加 XML 聲明
+        svgString = '<?xml version="1.0" standalone="no"?>\r\n' + svgString;
+        
+        // 將 SVG 字符串轉換為 Blob 對象
+        const blob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
+        
+        // 創建一個下載鏈接
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        const currentDate = new Date();
+        const formattedDate = currentDate.getFullYear().toString().padStart(4, '0') +
+                              (currentDate.getMonth() + 1).toString().padStart(2, '0') +
+                              currentDate.getDate().toString().padStart(2, '0') +
+                              currentDate.getHours().toString().padStart(2, '0') +
+                              currentDate.getMinutes().toString().padStart(2, '0') +
+                              currentDate.getSeconds().toString().padStart(2, '0') +
+                              currentDate.getMilliseconds().toString().padStart(3, '0');
+        link.download = `in-class-test-paper_${formattedDate}.svg`;
+        
+        // 模擬點擊下載鏈接
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // 釋放 URL 對象
+        URL.revokeObjectURL(link.href);
+        
+        // 顯示成功消息
+        Swal.fire('成功', 'SVG 檔案已下載', 'success');
+        });
+    });
+
+    document.getElementById('removeLine').addEventListener('click', function () {
+        console.log("removeLine");
+        Swal.fire({
+            title: '移除指定行',
+            input: 'select',
+            inputOptions: {
+                '1': '行 1',
+                '2': '行 2',
+                '3': '行 3',
+                '4': '行 4',
+                '5': '行 5',
+                '6': '行 6',
+                '7': '行 7',
+                '8': '行 8',
+                '9': '行 9',
+                '10': '行 10',
+                '11': '行 11',
+                '12': '行 12',
+                '13': '行 13',
+                '14': '行 14',
+                '15': '行 15',
+                '16': '行 16',
+                '17': '行 17',
+                '18': '行 18'
+            },
+            inputPlaceholder: '選擇要移除的行',
+            showCancelButton: true,
+            inputValidator: (value) => {
+                return new Promise((resolve) => {
+                    if (value) {
+                        resolve();
+                    } else {
+                        resolve('請選擇一行');
+                    }
+                });
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var lineToRemove = result.value;
+                var elementToRemove = document.querySelector(`#InClassTestPaperROW${lineToRemove}`);
+                if (elementToRemove && elementToRemove.nextSibling && elementToRemove.nextSibling.classList && elementToRemove.nextSibling.classList.contains('label-text')) {
+                    var textToRemove = elementToRemove.nextSibling;
+                    textToRemove.parentNode.removeChild(textToRemove);
+                }
+                if (textToRemove) {
+                    Swal.fire('成功', `已移除第 ${lineToRemove} 行`, 'success');
+                    // 讀取 URL hash
+                    const hash = window.location.hash.slice(1);
+
+                    // 檢查 hash 是否為 base64 字串並可以解析為 JSON
+                    try {
+                        const decodedString = atob(hash);
+                        const decodedData = JSON.parse(decodedString);
+
+                        // 設置對應行的數據為空字串
+                        decodedData[`InClassTestPaperROW${lineToRemove}`] = '';
+
+                        // 將更新後的數據重新編碼並設置為新的 URL hash
+                        const updatedHash = btoa(JSON.stringify(decodedData));
+                        window.location.hash = updatedHash;
+
+                        console.log(`已更新第 ${lineToRemove} 行的數據`);
+                    } catch (error) {
+                        console.log(' [ERROR] 無法解析 URL hash 或更新數據:', error);
+                    }
+                } else {
+                    Swal.fire('錯誤', `找不到第 ${lineToRemove} 行`, 'error');
+                }
+            }
+        });
+        //Swal.close();
+    });
+
+    document.getElementById('clearText').addEventListener('click', function () {
+        var textElements = document.getElementsByClassName('label-text');
+        while (textElements.length > 0) {
+            textElements[0].parentNode.removeChild(textElements[0]);
+        }
+        Swal.close();
+    });
+
+    document.getElementById('toggleFullscreen').addEventListener('click', function () {
+        var fullscreenBtn = document.getElementById('FULLSCREENANDCLEAR');
+        if (fullscreenBtn) {
+            fullscreenBtn.click();
+        } else {
+            console.error("無法找到全螢幕按鈕");
+        }
+        Swal.close();
+    });
+
+    document.getElementById('removeWidgets').addEventListener('click', function () {
+        var github = document.querySelector('.github-corner');
+        var menu = document.getElementById('masterMenu');
+        if (github) github.style.display = 'none';
+        if (menu) menu.style.display = 'none';
+        Swal.close();
+    });
+});
+
+
+document.getElementById('addTextBtn').addEventListener('click', function () {
+    let nextAvailableRow = 1;
+
+    // 檢查行1到行18是否已有文字
+    for (let i = 1; i <= 18; i++) {
+        const rowElement = document.getElementById(`InClassTestPaperROW${i}`);
+        if (rowElement && rowElement.nextSibling && rowElement.nextSibling.classList && rowElement.nextSibling.classList.contains('label-text')) {
+            nextAvailableRow = i + 1;
+        } else {
+            break;
+        }
+    }
+
+    // 確保 nextAvailableRow 不超過18
+    nextAvailableRow = Math.min(nextAvailableRow, 18);
+
+    Swal.fire({
+        title: '添加文字',
+        html:
+            '<input id="swal-input1" class="swal2-input" placeholder="輸入文字">' +
+            '<select id="swal-input2" class="swal2-select">' +
+            Array.from({ length: 18 }, (_, i) => `<option value="${i + 1}"${i + 1 === nextAvailableRow ? ' selected' : ''}>行 ${i + 1}</option>`).join('') +
+            '</select>',
+        focusConfirm: false,
+        preConfirm: () => {
+            return [
+                document.getElementById('swal-input1').value,
+                document.getElementById('swal-input2').value
+            ]
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const [text, row] = result.value;
+            if (text && row) {
+                const rowElement = document.getElementById(`InClassTestPaperROW${row}`);
+                if (rowElement) {
+                    ICTPaddTEXT(rowElement, text);
+                    // 將行號和文字轉換為 JSON 物件
+                    var data = {
+                        // row: `InClassTestPaperROW${row}`,
+                        // text: text
+                    };
+                    // 讀取現有的 URL hash
+                    const existingHash = window.location.hash.slice(1);
+
+                    if (existingHash) {
+                        try {
+                            // 解碼並解析現有的 hash
+                            data = JSON.parse(atob(existingHash));
+                        } catch (error) {
+                            console.error('解析現有 hash 時發生錯誤:', error);
+                        }
+                    }
+
+                    // 更新或添加新的行和文字
+                    data[`InClassTestPaperROW${row}`] = text;
+
+                    // 將 JSON 物件轉換為字串，再轉為 Base64
+                    const encodedData = btoa(JSON.stringify(data));
+
+                    // 更新 URL 的 hash 部分
+                    window.location.hash = encodedData;
+
+                    //const textElement = rowElement.nextElementSibling;
+                    //this attribute is gen by ai and i dont think i am using this
+                    //if (textElement && textElement.classList.contains('label-text')) {
+                    //  textElement.setAttribute('data-row', row);
+                    //}
+                } else {
+                    console.error(`無法找到行 ${row}`);
+                }
+            }
+        }
+    });
+});
+
+// 頁面載入時執行
+window.onload = function () {
+    // 檢查 URL 的 hash 部分
+    const hash = window.location.hash.slice(1); // 移除開頭的 #
+
+    if (hash) {
+        try {
+            // 嘗試將 hash 解碼為 JSON
+            const decodedData = JSON.parse(atob(hash));
+
+            // 檢查解碼後的數據是否包含必要的屬性
+            if (decodedData) {//&& decodedData.row && decodedData.text) {
+                // 使用解碼後的數據調用 ICTPaddTEXT
+                /*const rowElement = document.getElementById(decodedData.row);
+                if (rowElement) {
+                  ICTPaddTEXT(rowElement, decodedData.text);
+                } else {
+                  console.error(`無法找到元素: ${decodedData.row}`);
+                }*/
+                // 遍歷 InClassTestPaperROW1 到 InClassTestPaperROW18
+                for (let row = 1; row <= 18; row++) {
+                    try {
+                        const rowElement = document.getElementById(`InClassTestPaperROW${row}`);
+                        if (rowElement && decodedData[`InClassTestPaperROW${row}`]) {
+                            ICTPaddTEXT(rowElement, decodedData[`InClassTestPaperROW${row}`]);
+                        }
+                    } catch (error) {
+                        console.error(`處理 InClassTestPaperROW${row} 時發生錯誤:`, error);
+                    }
+                }
+            } else {
+                console.error('解碼後的數據格式不正確');
+                loadDefaultText();
+            }
+        } catch (error) {
+            console.error('解碼或解析 URL hash 時發生錯誤:', error);
+            loadDefaultText();
+        }
+    } else {
+        loadDefaultText();
+    }
+};
+
+// 載入預設文字的函數
+function loadDefaultText() {
+    ICTPaddTEXT(InClassTestPaperROW1, "說明:這是一張隨堂測驗卷的圖片");
+    ICTPaddTEXT(InClassTestPaperROW2, "點擊我下載這張圖片");
+    ICTPaddTEXT(InClassTestPaperROW3, "點擊我下載空白隨堂測驗卷檔案");
+    ICTPaddTEXT(InClassTestPaperROW15, "以下的說明是給開發人員看的:");
+    ICTPaddTEXT(InClassTestPaperROW16, "這是一個JavaScript套件");
+    ICTPaddTEXT(InClassTestPaperROW17, "點擊我觀看說明文件");
+    ICTPaddTEXT(InClassTestPaperROW9, "點擊左上的按鈕可以清空畫面，");
+    ICTPaddTEXT(InClassTestPaperROW10, "也可以調整隨堂測驗卷的大小");
+    ICTPaddTEXT(InClassTestPaperROW18, "MIT License 2024 andythebreaker");
+}
