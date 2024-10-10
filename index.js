@@ -356,9 +356,70 @@ document.getElementById('masterMenu').addEventListener('click', function () {
             '<button id="clearText" class="swal2-confirm swal2-styled">清除所有文字</button>' +
             '<button id="toggleFullscreen" class="swal2-confirm swal2-styled">切換全螢幕</button>' +
             '<button id="downloadSVG" class="swal2-confirm swal2-styled">下載</button>' +
+            '<button id="emailMain" class="swal2-confirm swal2-styled">分享(寄送email)</button>' +
             '<button id="removeWidgets" class="swal2-confirm swal2-styled">移除 GitHub 和選單小工具</button>' +
             '<button id="removeLine" class="swal2-confirm swal2-styled">移除指定行</button>',
         showConfirmButton: false
+    });
+    document.getElementById('emailMain').addEventListener('click', function () {
+        Swal.fire({
+            title: '填寫EMAIL API，這個功能因為要付費，所以並沒有開放給一般使用者使用，如果有人要付錢的話，欸嘿！我也是超歡迎的啦XD',
+            html:
+                '<form id="emailForm">' +
+                '<input type="text" id="emailAaccount" placeholder="Account" required><br>' +
+                '<input type="password" id="emailPassword" placeholder="Password" required><br>' +
+                //'<input type="text" id="emailName" placeholder="Name" required><br>' +
+                '<button id="sendSVGemail" class="swal2-confirm swal2-styled">Send Email</button>' +
+                '</form>',
+            showConfirmButton: false
+        });
+
+        document.getElementById('sendSVGemail').addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the form from submitting
+            (function () {
+                const publicKey = document.getElementById('emailAaccount').value;
+                const emailAddr = document.getElementById('emailPassword').value;
+                //const tmpname = document.getElementById('emailName').value;
+
+
+                emailjs.init({
+                    publicKey: publicKey, // Use the value of the password input field
+                });
+
+                var templateParams = {
+                    topic: '[隨堂測驗卷](請輸入標題)',
+                    my_html: `<!DOCTYPE html>
+<html>
+<head>
+    <title>[請輸入標題](無標題)</title>
+</head>
+<body>
+    <h1>此訊息使用跳板鏈發送</h1>
+    <p>訊息起始</p>
+    <h2>object Element</h2>
+    <p>Embedding the URL using the object tag:</p>
+    <object data="${window.location.href}" 
+            width="644" height="911" type="text/html">
+        Your browser does not support the object tag.
+    </object>
+    <a href="${window.location.href}">Visit link</a>
+</body>
+</html>
+`,
+                };
+
+                emailjs.send(emailAddr.split("@")[0], emailAddr.split("@")[1], templateParams).then(
+                    (response) => {
+                        console.log('SUCCESS!', response.status, response.text);
+                        swal.close();
+                    },
+                    (error) => {
+                        Swal.fire('錯誤', error, 'error');
+                    },
+                );
+            })();
+        });
+
     });
 
     document.getElementById('downloadSVG').addEventListener('click', function () {
@@ -371,61 +432,61 @@ document.getElementById('masterMenu').addEventListener('click', function () {
             showConfirmButton: false
         });
 
-        document.getElementById('downloadPDF').addEventListener('click', 
+        document.getElementById('downloadPDF').addEventListener('click',
             async function () {
                 const svg = document.querySelector('svg');
                 const svgString = new XMLSerializer().serializeToString(svg);
                 // 使用 window.jspdf 來訪問 jsPDF
                 const { jsPDF } = window.jspdf;
                 const pdfDoc = new jsPDF();
-      await pdfDoc.addSvgAsImage(svgString, 0, 0, pdfDoc.internal.pageSize.width, pdfDoc.internal.pageSize.height);
-      pdfDoc.save("x.pdf");
+                await pdfDoc.addSvgAsImage(svgString, 0, 0, pdfDoc.internal.pageSize.width, pdfDoc.internal.pageSize.height);
+                pdfDoc.save("x.pdf");
             }
         );
 
         document.getElementById('downloadJPG').addEventListener('click', function () {
-           document.getElementById('vJPG').click();
+            document.getElementById('vJPG').click();
         });
 
         document.getElementById('downloadSVGFile').addEventListener('click', function () {
-        // 獲取 SVG 元素
-        const svg = document.querySelector('svg');
-        
-        // 創建一個新的 XMLSerializer 對象
-        const serializer = new XMLSerializer();
-        
-        // 將 SVG 元素序列化為字符串
-        let svgString = serializer.serializeToString(svg);
-        
-        // 添加 XML 聲明
-        svgString = '<?xml version="1.0" standalone="no"?>\r\n' + svgString;
-        
-        // 將 SVG 字符串轉換為 Blob 對象
-        const blob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
-        
-        // 創建一個下載鏈接
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        const currentDate = new Date();
-        const formattedDate = currentDate.getFullYear().toString().padStart(4, '0') +
-                              (currentDate.getMonth() + 1).toString().padStart(2, '0') +
-                              currentDate.getDate().toString().padStart(2, '0') +
-                              currentDate.getHours().toString().padStart(2, '0') +
-                              currentDate.getMinutes().toString().padStart(2, '0') +
-                              currentDate.getSeconds().toString().padStart(2, '0') +
-                              currentDate.getMilliseconds().toString().padStart(3, '0');
-        link.download = `in-class-test-paper_${formattedDate}.svg`;
-        
-        // 模擬點擊下載鏈接
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // 釋放 URL 對象
-        URL.revokeObjectURL(link.href);
-        
-        // 顯示成功消息
-        Swal.fire('成功', 'SVG 檔案已下載', 'success');
+            // 獲取 SVG 元素
+            const svg = document.querySelector('svg');
+
+            // 創建一個新的 XMLSerializer 對象
+            const serializer = new XMLSerializer();
+
+            // 將 SVG 元素序列化為字符串
+            let svgString = serializer.serializeToString(svg);
+
+            // 添加 XML 聲明
+            svgString = '<?xml version="1.0" standalone="no"?>\r\n' + svgString;
+
+            // 將 SVG 字符串轉換為 Blob 對象
+            const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+
+            // 創建一個下載鏈接
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            const currentDate = new Date();
+            const formattedDate = currentDate.getFullYear().toString().padStart(4, '0') +
+                (currentDate.getMonth() + 1).toString().padStart(2, '0') +
+                currentDate.getDate().toString().padStart(2, '0') +
+                currentDate.getHours().toString().padStart(2, '0') +
+                currentDate.getMinutes().toString().padStart(2, '0') +
+                currentDate.getSeconds().toString().padStart(2, '0') +
+                currentDate.getMilliseconds().toString().padStart(3, '0');
+            link.download = `in-class-test-paper_${formattedDate}.svg`;
+
+            // 模擬點擊下載鏈接
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // 釋放 URL 對象
+            URL.revokeObjectURL(link.href);
+
+            // 顯示成功消息
+            Swal.fire('成功', 'SVG 檔案已下載', 'success');
         });
     });
 
@@ -480,14 +541,33 @@ document.getElementById('masterMenu').addEventListener('click', function () {
 
                     // 檢查 hash 是否為 base64 字串並可以解析為 JSON
                     try {
-                        const decodedString = atob(hash);
+
+                        function fromBase64Unicode(base64) {
+                            return decodeURIComponent(Array.prototype.map.call(atob(base64), function (c) {
+                                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                            }).join(''));
+                        }
+
+                        // Example use:
+                        const decodedString = fromBase64Unicode(hash);
+
+                        //  const decodedString = atob(hash);
                         const decodedData = JSON.parse(decodedString);
 
                         // 設置對應行的數據為空字串
                         decodedData[`InClassTestPaperROW${lineToRemove}`] = '';
 
                         // 將更新後的數據重新編碼並設置為新的 URL hash
-                        const updatedHash = btoa(JSON.stringify(decodedData));
+
+                        function toBase64Unicode(str) {
+                            return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
+                                return String.fromCharCode('0x' + p1);
+                            }));
+                        }
+
+                        const updatedHash = toBase64Unicode(JSON.stringify(decodedData));
+
+                        //const updatedHash = btoa(JSON.stringify(decodedData));
                         window.location.hash = updatedHash;
 
                         console.log(`已更新第 ${lineToRemove} 行的數據`);
@@ -578,7 +658,18 @@ document.getElementById('addTextBtn').addEventListener('click', function () {
                     if (existingHash) {
                         try {
                             // 解碼並解析現有的 hash
-                            data = JSON.parse(atob(existingHash));
+
+                            function fromBase64Unicode(base64) {
+                                return decodeURIComponent(Array.prototype.map.call(atob(base64), function (c) {
+                                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                                }).join(''));
+                            }
+
+                            // Example use:
+                            const decodedData_ = fromBase64Unicode(existingHash);
+
+
+                            data = JSON.parse(decodedData_);
                         } catch (error) {
                             console.error('解析現有 hash 時發生錯誤:', error);
                         }
@@ -588,7 +679,16 @@ document.getElementById('addTextBtn').addEventListener('click', function () {
                     data[`InClassTestPaperROW${row}`] = text;
 
                     // 將 JSON 物件轉換為字串，再轉為 Base64
-                    const encodedData = btoa(JSON.stringify(data));
+
+                    function toBase64Unicode(str) {
+                        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (match, p1) {
+                            return String.fromCharCode('0x' + p1);
+                        }));
+                    }
+
+                    const encodedData = toBase64Unicode(JSON.stringify(data));
+
+                    //const encodedData = btoa(JSON.stringify(data));
 
                     // 更新 URL 的 hash 部分
                     window.location.hash = encodedData;
@@ -614,7 +714,17 @@ window.onload = function () {
     if (hash) {
         try {
             // 嘗試將 hash 解碼為 JSON
-            const decodedData = JSON.parse(atob(hash));
+
+            function fromBase64Unicode(base64) {
+                return decodeURIComponent(Array.prototype.map.call(atob(base64), function (c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+            }
+
+            // Example use:
+            const decodedData_ = fromBase64Unicode(hash);
+
+            const decodedData = JSON.parse(decodedData_);
 
             // 檢查解碼後的數據是否包含必要的屬性
             if (decodedData) {//&& decodedData.row && decodedData.text) {

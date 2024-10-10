@@ -19,10 +19,9 @@
     <button id="addTextBtn" class="FLOATBTN-RB btn-60" style="position: fixed;">
         <span>+ text
         </span>
-      </button>
+    </button>
 
     <button id="vJPG" style="display: none;"></button>
-
 
     <a href="https://github.com/markedjs/marked" class="github-corner" aria-label="View source on Github">
         <!--https://marked.js.org/demo/-->
@@ -42,7 +41,7 @@
 
     <script type="module">
         import { Canvg } from 'https://cdn.skypack.dev/canvg@^4.0.0';
-        
+
         // 創建一個不可見的 canvas 元素
         const canvas = document.createElement('canvas');
         canvas.style.display = 'none';
@@ -55,15 +54,15 @@
         canvas.width = 793;
         canvas.height = 1122;
         document.body.appendChild(canvas);
-        
+
         document.getElementById('vJPG').addEventListener('click', async function () {
             const svg = document.querySelector('svg');
             const svgString = new XMLSerializer().serializeToString(svg);
-            
+
             const ctx = canvas.getContext('2d');
             const v = await Canvg.from(ctx, svgString);
             v.start();
-            
+
             const img = new Image();
             img.src = canvas.toDataURL('image/jpg');
             img.onload = function () {
@@ -75,6 +74,8 @@
         });
     </script>
 
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
 </body>
 
 </html>
